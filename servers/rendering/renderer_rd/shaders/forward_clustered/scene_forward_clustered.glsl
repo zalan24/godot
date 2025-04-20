@@ -1065,22 +1065,22 @@ vec4 fog_process(vec3 vertex) {
 		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
-	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) { //
+	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
+		// TODO lift these out of the branch?
 		float vertex_distance = length(vertex);
 		vec3 view = vertex/vertex_distance;
+		// ---
 
-		// TODO y is enough for this
-		vec3 world_view = (scene_data_block.data.inv_view_matrix * vec4(view, 0.0)).xyz;
-		// float y = (scene_data_block.data.inv_view_matrix * vec4(vertex, 1.0)).y;
-		// float cameraY = (scene_data_block.data.inv_view_matrix * vec4(0.0, 0.0, 0.0, 1.0)).y;
+		float world_view_y = dot(
+			view,
+			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])
+		);
 		float cameraY = scene_data_block.data.inv_view_matrix[3][1]; // TODO is this correct?
-
-		// // float y_dist = y - scene_data_block.data.fog_height;
 
 		const float y_mul = 0.1;
 
 		float FH = scene_data_block.data.fog_height;
-		float WVy = world_view.y;
+		float WVy = world_view_y;
 		float FH_density = scene_data_block.data.fog_height_density;
 		float L = vertex_distance;
 
