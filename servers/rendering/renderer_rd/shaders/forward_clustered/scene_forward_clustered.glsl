@@ -1081,9 +1081,10 @@ vec4 fog_process(vec3 vertex) {
 		);
 		float cameraY = scene_data_block.data.inv_view_matrix[3][1]; // TODO is this correct?
 
-		const float y_mul = 0.1;
+		const float height_falloff = 0.1;
 
-		float FH = scene_data_block.data.fog_height;
+		float y_mul = height_falloff;
+		// float FH = scene_data_block.data.fog_height;
 		float WVy = world_view_y;
 		float FH_density = scene_data_block.data.fog_height_density;
 		float L = vertex_distance;
@@ -1114,7 +1115,9 @@ vec4 fog_process(vec3 vertex) {
 		// [definite]    -exp((FH-cameraY-L*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
 		// [definite]    (exp((FH-cameraY-0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) /(WVy*y_mul)
 		
-		float density_integral = (exp((FH-cameraY-0.0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) / (WVy*y_mul);
+		// float density_integral = (exp((FH-cameraY-0.0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) / (WVy*y_mul);
+		float y_diff = cameraY-scene_data_block.data.fog_height;
+		float density_integral = (exp(-y_diff*y_mul) - exp(-(y_diff+L*WVy)*y_mul)) / (WVy*y_mul);
 
 		float vfog_amount = 1.0 - exp(-density_integral*FH_density);
 
