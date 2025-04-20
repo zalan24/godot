@@ -1057,7 +1057,7 @@ vec4 fog_process(vec3 vertex) {
 
 	float fog_amount = 0.0;
 
-	if (sc_use_depth_fog()) {
+	if (sc_use_depth_fog()) { // TODO make this exclusive with exp height fog?
 		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, length(vertex));
 		float fog_quad_amount = pow(fog_z, scene_data_block.data.fog_depth_curve) * scene_data_block.data.fog_density;
 		fog_amount = fog_quad_amount;
@@ -1066,6 +1066,10 @@ vec4 fog_process(vec3 vertex) {
 	}
 
 	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
+		// TODO
+		//  1) apply to sky
+		//  2) adjust sun scatter: the sun currently assumes full fog
+
 		// TODO lift these out of the branch?
 		float vertex_distance = length(vertex);
 		vec3 view = vertex/vertex_distance;
@@ -1112,12 +1116,7 @@ vec4 fog_process(vec3 vertex) {
 		
 		float density_integral = (exp((FH-cameraY-0.0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) / (WVy*y_mul);
 
-		float test_transparency = exp(-density_integral*FH_density);
-
-
-		float vfog_amount = 1.0 - test_transparency;
-		// float vfog_amount = clamp((FH-(cameraY+world_view.y*L))*y_mul, 0.0, 1.0);
-		// float vfog_amount = 1.0 - exp(min(0.0, y_dist * scene_data_block.data.fog_height_density));
+		float vfog_amount = 1.0 - exp(-density_integral*FH_density);
 
 		fog_amount = max(vfog_amount, fog_amount);
 	}
