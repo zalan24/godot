@@ -172,7 +172,7 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 }
 
 vec4 fog_process(vec3 view, vec3 sky_color) {
-	vec3 fog_color = mix(sky_scene_data.fog_light_color, sky_color, sky_scene_data.fog_aerial_perspective);
+	vec3 fog_color = mix(sky_scene_data.fog_light_color, sky_color, sky_scene_data.fog_aerial_perspective);//
 
 	if (sky_scene_data.fog_sun_scatter > 0.001) {
 		vec4 sun_scatter = vec4(0.0);
@@ -265,7 +265,7 @@ void main() {
 	// Draw "fixed" fog before volumetric fog to ensure volumetric fog can appear in front of the sky.
 	if (sky_scene_data.fog_enabled) {
 		vec4 fog = fog_process(cube_normal, frag_color.rgb);
-		frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a * sky_scene_data.fog_sky_affect);
+		frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a * sky_scene_data.fog_sky_affect); //
 	}
 
 	if (sky_scene_data.volumetric_fog_enabled) {

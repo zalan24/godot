@@ -1079,7 +1079,7 @@ vec4 fog_process(vec3 vertex) {
 			view,
 			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])
 		);
-		float cameraY = scene_data_block.data.inv_view_matrix[3][1]; // TODO is this correct?
+		float cameraY = scene_data_block.data.inv_view_matrix[3][1];
 
 		const float height_falloff = 0.1;
 

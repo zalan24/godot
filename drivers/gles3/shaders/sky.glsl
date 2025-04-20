@@ -223,7 +223,7 @@ void main() {
 	// Draw "fixed" fog before volumetric fog to ensure volumetric fog can appear in front of the sky.
 	if (fog_enabled) {
 		vec4 fog = fog_process(cube_normal, color.rgb);
-		color.rgb = mix(color.rgb, fog.rgb, fog.a * fog_sky_affect);
+		color.rgb = mix(color.rgb, fog.rgb, fog.a * fog_sky_affect); //
 	}
 
 	if (custom_fog.a > 0.0) {
