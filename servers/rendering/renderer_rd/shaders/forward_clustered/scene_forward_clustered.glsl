@@ -1065,12 +1065,59 @@ vec4 fog_process(vec3 vertex) {
 		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
-	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
-		float y = (scene_data_block.data.inv_view_matrix * vec4(vertex, 1.0)).y;
+	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) { //
+		float vertex_distance = length(vertex);
+		vec3 view = vertex/vertex_distance;
 
-		float y_dist = y - scene_data_block.data.fog_height;
+		// TODO y is enough for this
+		vec3 world_view = (scene_data_block.data.inv_view_matrix * vec4(view, 0.0)).xyz;
+		// float y = (scene_data_block.data.inv_view_matrix * vec4(vertex, 1.0)).y;
+		// float cameraY = (scene_data_block.data.inv_view_matrix * vec4(0.0, 0.0, 0.0, 1.0)).y;
+		float cameraY = scene_data_block.data.inv_view_matrix[3][1]; // TODO is this correct?
 
-		float vfog_amount = 1.0 - exp(min(0.0, y_dist * scene_data_block.data.fog_height_density));
+		// // float y_dist = y - scene_data_block.data.fog_height;
+
+		const float y_mul = 0.1;
+
+		float FH = scene_data_block.data.fog_height;
+		float WVy = world_view.y;
+		float FH_density = scene_data_block.data.fog_height_density;
+		float L = vertex_distance;
+
+		// cameraY+crossT*WVy = FH
+		// crossT = (FH-cameraY)/WVy
+
+		// fog_density(y) = exp(-max(0.0, y-FH)*y_mul) * FH_density
+		// simple_fog_density(y) = exp((FH-y)*y_mul) * FH_density
+
+		// 1 unit of density over 1m reduces light by 1/e
+
+		// transparency = lim N:int->inf: Prod[n : [0,N-1]]:
+		//     exp(-1/N*L*fog_density(cameraY+((n+0.5)/N*L)*WVy))
+		// transparency = lim N:int->inf:
+		//     exp(Sum[n : [0,N-1]]:    -1/N*L*fog_density(cameraY+((n+0.5)/N*L)*WVy)     )
+		// lim N:int->inf:   Sum[n : [0,N-1]]:    -1/N*L*fog_density(cameraY+((n+0.5)/N*L)*WVy) =
+		//   I[0, L]:  -fog_density(cameraY+t*WVy)  dt
+		// transparency = exp(I[0, L]:  -fog_density(cameraY+t*WVy)  dt)
+
+		// simplified:
+		// transparency = exp(I[0, L]:  -simple_fog_density(cameraY+t*WVy)  dt)
+		// transparency = exp(I[0, L]:  -exp((FH-(cameraY+t*WVy))*y_mul) * FH_density  dt)
+		// transparency = exp(I[0, L]:  -exp((FH-cameraY-t*WVy)*y_mul) * FH_density  dt)
+		// transparency = exp(FH_density * I[0, L]:  -exp((FH-cameraY-t*WVy)*y_mul)  dt)
+		// I[0, L]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
+		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
+		// [definite]    -exp((FH-cameraY-L*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
+		// [definite]    (exp((FH-cameraY-0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) /(WVy*y_mul)
+		
+		float density_integral = (exp((FH-cameraY-0.0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) / (WVy*y_mul);
+
+		float test_transparency = exp(-density_integral*FH_density);
+
+
+		float vfog_amount = 1.0 - test_transparency;
+		// float vfog_amount = clamp((FH-(cameraY+world_view.y*L))*y_mul, 0.0, 1.0);
+		// float vfog_amount = 1.0 - exp(min(0.0, y_dist * scene_data_block.data.fog_height_density));
 
 		fog_amount = max(vfog_amount, fog_amount);
 	}
