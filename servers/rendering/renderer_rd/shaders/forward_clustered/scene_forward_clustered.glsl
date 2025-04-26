@@ -1081,7 +1081,7 @@ vec4 fog_process(vec3 vertex) {
 		);
 		float cameraY = scene_data_block.data.inv_view_matrix[3][1];
 
-		const float height_falloff = 0.1; // TODO register this as a parameter?
+		const float height_falloff = 0.02; // TODO register this as a parameter?
 
 		// float y_mul = height_falloff;
 		// float FH = scene_data_block.data.fog_height;

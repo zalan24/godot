@@ -174,7 +174,7 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 vec4 fog_process(vec3 view, vec3 sky_color) {
 	float fog_amount = 1.0;
 
-	const float height_falloff = 0.1; // TODO register this as a parameter?
+	const float height_falloff = 0.02; // TODO register this as a parameter?
 	// float y_mul = height_falloff;
 	// float FH = scene_data_block.data.fog_height;
 	// float WVy = world_view_y;
