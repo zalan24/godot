@@ -172,7 +172,41 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 }
 
 vec4 fog_process(vec3 view, vec3 sky_color) {
-	vec3 fog_color = mix(sky_scene_data.fog_light_color, sky_color, sky_scene_data.fog_aerial_perspective);//
+	float fog_amount = 1.0;
+
+	const float height_falloff = 0.1; // TODO register this as a parameter?
+	// float y_mul = height_falloff;
+	// float FH = scene_data_block.data.fog_height;
+	// float WVy = world_view_y;
+	// float FH_density = scene_data_block.data.fog_height_density;
+	float y_mul = height_falloff;
+	float FH_density = 0.01;
+	float WVy = view.y;
+	float FH = 30.0;
+	if (abs(FH_density) >= 0.0001) {
+		float cameraY = params.position.y;
+
+		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
+		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
+		// [definite]    -exp((FH-cameraY-inf*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
+		// [definite]    exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul) - lim t->inf: exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul)
+
+		// lim t->inf: exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) =
+		//    1/(WVy*y_mul) * lim t->inf: exp((FH-cameraY-t*WVy)*y_mul) =
+		//    1/(WVy*y_mul) * lim t->inf: exp((FH-cameraY-t*WVy)*y_mul) =
+		//      WVy=0 -> exp((FH-cameraY-t*0)*y_mul) = exp((FH-cameraY)*y_mul)
+		//      WVy>0 -> lim t->inf exp((FH-cameraY-t)*y_mul) = lim t->inf exp(-t) = 0
+		//      WVy<0 -> lim t->inf exp((FH-cameraY+t)*y_mul) = lim t->inf exp(t) => inf (technically not valid, but works...)
+
+		float y_diff = cameraY-FH;
+		if (WVy > 0.0) {
+			float density_integral = exp(-y_diff*y_mul) / (WVy*y_mul);
+			fog_amount = 1.0 - exp(-density_integral * FH_density);
+		}
+		else
+			fog_amount = 1.0; // density_integral is infinite
+	}
+	vec3 fog_color = mix(sky_scene_data.fog_light_color, sky_color, fog_amount * sky_scene_data.fog_aerial_perspective);
 
 	if (sky_scene_data.fog_sun_scatter > 0.001) {
 		vec4 sun_scatter = vec4(0.0);
@@ -180,11 +214,12 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		for (uint i = 0; i < sky_scene_data.directional_light_count; i++) {
 			vec3 light_color = directional_lights.data[i].color_size.xyz * directional_lights.data[i].direction_energy.w;
 			float light_amount = pow(max(dot(view, directional_lights.data[i].direction_energy.xyz), 0.0), 8.0);
-			fog_color += light_color * light_amount * sky_scene_data.fog_sun_scatter;
+			// Fog amount is used for the center as a simple approximation
+			fog_color += light_color * light_amount * fog_amount * sky_scene_data.fog_sun_scatter;
 		}
 	}
 
-	return vec4(fog_color, 1.0);
+	return vec4(fog_color, fog_amount);
 }
 
 void main() {
