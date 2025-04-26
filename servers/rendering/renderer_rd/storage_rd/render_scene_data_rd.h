@@ -97,7 +97,7 @@ private:
 	RID uniform_buffer; // loaded into this uniform buffer (supplied externally)
 
 	// This struct is loaded into Set 1 - Binding 0, populated at start of rendering a frame, must match with shader code
-	struct UBO {
+	struct UBO { //
 		float projection_matrix[16];
 		float inv_projection_matrix[16];
 		float inv_view_matrix[16];

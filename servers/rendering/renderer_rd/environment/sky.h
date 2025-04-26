@@ -137,7 +137,7 @@ private:
 
 public:
 	struct SkySceneState {
-		struct UBO {
+		struct UBO { //
 			float combined_reprojection[RendererSceneRender::MAX_RENDER_VIEWS][16]; // 2 x 64 - 128
 			float view_inv_projections[RendererSceneRender::MAX_RENDER_VIEWS][16]; // 2 x 64 - 256
 			float view_eye_offsets[RendererSceneRender::MAX_RENDER_VIEWS][4]; // 2 x 16 - 288
@@ -157,8 +157,8 @@ public:
 
 			float z_far; // 4 - 340
 			uint32_t directional_light_count; // 4 - 344
-			uint32_t pad1; // 4 - 348
-			uint32_t pad2; // 4 - 352
+			float fog_height_density; // 4 - 348
+			float fog_height; // 4 - 352
 		};
 
 		UBO ubo;

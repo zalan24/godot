@@ -276,7 +276,7 @@ private:
 
 	struct SceneState {
 		// This struct is loaded into Set 1 - Binding 1, populated at start of rendering a frame, must match with shader code
-		struct UBO {
+		struct UBO { //
 			uint32_t cluster_shift;
 			uint32_t cluster_width;
 			uint32_t cluster_type_size;
