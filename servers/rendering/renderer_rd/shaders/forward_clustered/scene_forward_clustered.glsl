@@ -1090,8 +1090,7 @@ vec4 fog_process(vec3 vertex) {
 		// float L = vertex_distance;
 
 
-		// fog_density(y) = exp(-max(0.0, y-FH)*y_mul) * FH_density
-		// simple_fog_density(y) = exp((FH-y)*y_mul) * FH_density
+		// fog_density(y) = exp((FH-y)*y_mul) * FH_density
 
 		// 1 unit of density over 1m reduces light by 1/e
 
@@ -1104,7 +1103,7 @@ vec4 fog_process(vec3 vertex) {
 		// transparency = exp(I[0, L]:  -fog_density(cameraY+t*WVy)  dt)
 
 		// simplified:
-		// transparency = exp(I[0, L]:  -simple_fog_density(cameraY+t*WVy)  dt)
+		// transparency = exp(I[0, L]:  -fog_density(cameraY+t*WVy)  dt)
 		// transparency = exp(I[0, L]:  -exp((FH-(cameraY+t*WVy))*y_mul) * FH_density  dt)
 		// transparency = exp(I[0, L]:  -exp((FH-cameraY-t*WVy)*y_mul) * FH_density  dt)
 		// transparency = exp(FH_density * I[0, L]:  -exp((FH-cameraY-t*WVy)*y_mul)  dt)
