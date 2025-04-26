@@ -1081,7 +1081,7 @@ vec4 fog_process(vec3 vertex) {
 		);
 		float cameraY = scene_data_block.data.inv_view_matrix[3][1];
 
-		const float height_falloff = 0.1;
+		const float height_falloff = 0.1; // TODO register this as a parameter?
 
 		// float y_mul = height_falloff;
 		// float FH = scene_data_block.data.fog_height;
@@ -1113,10 +1113,16 @@ vec4 fog_process(vec3 vertex) {
 		// [definite]    -exp((FH-cameraY-L*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
 		// [definite]    (exp((FH-cameraY-0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) /(WVy*y_mul)
 		
+		float density_integral = 0;
 		float y_diff = cameraY-scene_data_block.data.fog_height;
-		float density_integral =
+		if (abs(world_view_y) > 0.0001) {
+			density_integral =
 			(exp(-y_diff*height_falloff) - exp(-(y_diff+vertex_distance*world_view_y)*height_falloff)) / (world_view_y*height_falloff);
-
+		}
+		else {
+			float fog_density = exp(-y_diff*height_falloff);
+			density_integral = vertex_distance * fog_density;
+		}
 		float vfog_amount = 1.0 - exp(-density_integral * scene_data_block.data.fog_height_density);
 
 		fog_amount = max(vfog_amount, fog_amount);
