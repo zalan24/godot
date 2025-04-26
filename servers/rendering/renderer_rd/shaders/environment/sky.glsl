@@ -179,13 +179,9 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 	// float FH = scene_data_block.data.fog_height;
 	// float WVy = world_view_y;
 	// float FH_density = scene_data_block.data.fog_height_density;
-	float y_mul = height_falloff;
-	float FH_density = 0.01;
-	float WVy = view.y;
+	float FH_density = 0.1;
 	float FH = 30.0;
 	if (abs(FH_density) >= 0.0001) {
-		float cameraY = params.position.y;
-
 		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
 		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
 		// [definite]    -exp((FH-cameraY-inf*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
@@ -198,9 +194,9 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		//      WVy>0 -> lim t->inf exp((FH-cameraY-t)*y_mul) = lim t->inf exp(-t) = 0
 		//      WVy<0 -> lim t->inf exp((FH-cameraY+t)*y_mul) = lim t->inf exp(t) => inf (technically not valid, but works...)
 
-		float y_diff = cameraY-FH;
-		if (WVy > 0.0) {
-			float density_integral = exp(-y_diff*y_mul) / (WVy*y_mul);
+		float y_diff = params.position.y-FH;
+		if (view.y > 0.0) {
+			float density_integral = exp(-y_diff*height_falloff) / (view.y*height_falloff);
 			fog_amount = 1.0 - exp(-density_integral * FH_density);
 		}
 		else
