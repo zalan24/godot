@@ -1553,6 +1553,7 @@ void RasterizerSceneGLES3::_setup_environment(const RenderDataGLES3 *p_render_da
 		scene_state.ubo.fog_depth_end = environment_get_fog_depth_end(p_render_data->environment) > 0.0 ? environment_get_fog_depth_end(p_render_data->environment) : scene_state.ubo.z_far;
 		scene_state.ubo.fog_depth_begin = MIN(environment_get_fog_depth_begin(p_render_data->environment), scene_state.ubo.fog_depth_end - 0.001);
 		scene_state.ubo.fog_height_density = environment_get_fog_height_density(p_render_data->environment);
+		scene_state.ubo.fog_height_falloff = environment_get_fog_height_falloff(p_render_data->environment);
 		scene_state.ubo.fog_aerial_perspective = environment_get_fog_aerial_perspective(p_render_data->environment);
 
 		Color fog_color = environment_get_fog_light_color(p_render_data->environment).srgb_to_linear();

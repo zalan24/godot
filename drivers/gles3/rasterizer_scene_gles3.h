@@ -394,14 +394,14 @@ private:
 			float ambient_light_color_energy[4];
 
 			float ambient_color_sky_mix;
-			uint32_t pad2;
+			float time;
 			float emissive_exposure_normalization;
 			uint32_t use_ambient_light = 0;
 
 			uint32_t use_ambient_cubemap = 0;
 			uint32_t use_reflection_cubemap = 0;
 			float fog_aerial_perspective;
-			float time;
+			float fog_height_falloff;
 
 			float radiance_inverse_xform[12];
 

@@ -816,7 +816,7 @@ vec4 fog_process(vec3 vertex) {
 		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
-	if (sc_use_fog_height_density()) { //
+	if (sc_use_fog_height_density()) { // TODO
 		float y = (scene_data_block.data.inv_view_matrix * vec4(vertex, 1.0)).y;
 
 		float y_dist = y - scene_data_block.data.fog_height;

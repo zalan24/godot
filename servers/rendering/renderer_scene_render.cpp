@@ -379,8 +379,8 @@ float RendererSceneRender::environment_get_white(RID p_env) const {
 
 // Fog
 
-void RendererSceneRender::environment_set_fog(RID p_env, bool p_enable, const Color &p_light_color, float p_light_energy, float p_sun_scatter, float p_density, float p_height, float p_height_density, float p_aerial_perspective, float p_sky_affect, RS::EnvironmentFogMode p_mode) {
-	environment_storage.environment_set_fog(p_env, p_enable, p_light_color, p_light_energy, p_sun_scatter, p_density, p_height, p_height_density, p_aerial_perspective, p_sky_affect, p_mode);
+void RendererSceneRender::environment_set_fog(RID p_env, bool p_enable, const Color &p_light_color, float p_light_energy, float p_sun_scatter, float p_density, float p_height, float p_height_density, float p_height_falloff, float p_aerial_perspective, float p_sky_affect, RS::EnvironmentFogMode p_mode) {
+	environment_storage.environment_set_fog(p_env, p_enable, p_light_color, p_light_energy, p_sun_scatter, p_density, p_height, p_height_density, p_height_falloff, p_aerial_perspective, p_sky_affect, p_mode);
 }
 
 bool RendererSceneRender::environment_get_fog_enabled(RID p_env) const {
@@ -417,6 +417,10 @@ float RendererSceneRender::environment_get_fog_height(RID p_env) const {
 
 float RendererSceneRender::environment_get_fog_height_density(RID p_env) const {
 	return environment_storage.environment_get_fog_height_density(p_env);
+}
+
+float RendererSceneRender::environment_get_fog_height_falloff(RID p_env) const {
+	return environment_storage.environment_get_fog_height_falloff(p_env);
 }
 
 float RendererSceneRender::environment_get_fog_aerial_perspective(RID p_env) const {

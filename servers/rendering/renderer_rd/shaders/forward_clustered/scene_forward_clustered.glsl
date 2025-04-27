@@ -1065,9 +1065,8 @@ vec4 fog_process(vec3 vertex) {
 		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
-	const float height_falloff = 0.02; // TODO register this as a parameter?
 
-	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
+	if (abs(scene_data_block.data.fog_height_density) >= 0.00001) {
 		// TODO lift these out of the branch?
 		float vertex_distance = length(vertex);
 		vec3 view = vertex/vertex_distance;
@@ -1108,6 +1107,7 @@ vec4 fog_process(vec3 vertex) {
 		// [definite]    -exp((FH-cameraY-L*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
 		// [definite]    (exp((FH-cameraY-0*WVy)*y_mul) - exp((FH-cameraY-L*WVy)*y_mul)) /(WVy*y_mul)
 		
+		float height_falloff = scene_data_block.data.fog_height_falloff;
 		float density_integral = 0;
 		float y_diff = cameraY-scene_data_block.data.fog_height;
 		if (abs(world_view_y) > 0.0001) {

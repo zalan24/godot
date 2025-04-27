@@ -820,6 +820,13 @@ void Environment::set_fog_height_density(float p_amount) {
 float Environment::get_fog_height_density() const {
 	return fog_height_density;
 }
+void Environment::set_fog_height_falloff(float p_amount) {
+	fog_height_falloff = p_amount;
+	_update_fog();
+}
+float Environment::get_fog_height_falloff() const {
+	return fog_height_falloff;
+}
 
 void Environment::set_fog_aerial_perspective(float p_aerial_perspective) {
 	fog_aerial_perspective = p_aerial_perspective;
@@ -848,6 +855,7 @@ void Environment::_update_fog() {
 			fog_density,
 			fog_height,
 			fog_height_density,
+			fog_height_falloff,
 			fog_aerial_perspective,
 			fog_sky_affect,
 			RS::EnvironmentFogMode(fog_mode));
@@ -1465,6 +1473,9 @@ void Environment::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_fog_height_density", "height_density"), &Environment::set_fog_height_density);
 	ClassDB::bind_method(D_METHOD("get_fog_height_density"), &Environment::get_fog_height_density);
 
+	ClassDB::bind_method(D_METHOD("set_fog_height_falloff", "height_falloff"), &Environment::set_fog_height_falloff);
+	ClassDB::bind_method(D_METHOD("get_fog_height_falloff"), &Environment::get_fog_height_falloff);
+
 	ClassDB::bind_method(D_METHOD("set_fog_aerial_perspective", "aerial_perspective"), &Environment::set_fog_aerial_perspective);
 	ClassDB::bind_method(D_METHOD("get_fog_aerial_perspective"), &Environment::get_fog_aerial_perspective);
 
@@ -1489,7 +1500,8 @@ void Environment::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_aerial_perspective", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_fog_aerial_perspective", "get_fog_aerial_perspective");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_sky_affect", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_fog_sky_affect", "get_fog_sky_affect");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height", PROPERTY_HINT_RANGE, "-1024,1024,0.01,or_less,or_greater,suffix:m"), "set_fog_height", "get_fog_height");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height_density", PROPERTY_HINT_RANGE, "-16,16,0.0001,or_less,or_greater"), "set_fog_height_density", "get_fog_height_density");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height_density", PROPERTY_HINT_RANGE, "0,1,0.0001,or_greater"), "set_fog_height_density", "get_fog_height_density");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height_falloff", PROPERTY_HINT_RANGE, "-1,1,0.0001,or_less,or_greater"), "set_fog_height_falloff", "get_fog_height_falloff");
 
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_depth_curve", PROPERTY_HINT_EXP_EASING), "set_fog_depth_curve", "get_fog_depth_curve");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_depth_begin", PROPERTY_HINT_RANGE, "0,4000,0.1,or_greater,or_less,suffix:m"), "set_fog_depth_begin", "get_fog_depth_begin");

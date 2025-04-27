@@ -63,7 +63,7 @@ struct SceneData {
 
 	mediump float fog_sun_scatter;
 	mediump float fog_aerial_perspective;
-	highp float time;
+	highp float fog_height_falloff;
 	mediump float reflection_multiplier; // one normally, zero when rendering reflections
 
 	vec2 taa_jitter;
@@ -74,4 +74,9 @@ struct SceneData {
 	bool pancake_shadows;
 	uint camera_visible_layers;
 	float pass_alpha_multiplier;
+
+	highp float time;
+	float pad1;
+	float pad2;
+	float pad3;
 };

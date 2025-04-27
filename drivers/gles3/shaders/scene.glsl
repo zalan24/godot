@@ -170,14 +170,14 @@ layout(std140) uniform SceneData { // ubo:2
 	mediump vec4 ambient_light_color_energy;
 
 	mediump float ambient_color_sky_mix;
-	float pad2;
+	float time;
 	float emissive_exposure_normalization;
 	bool use_ambient_light;
 
 	bool use_ambient_cubemap;
 	bool use_reflection_cubemap;
 	float fog_aerial_perspective;
-	float time;
+	float fog_height_falloff;
 
 	mat3 radiance_inverse_xform;
 
@@ -1599,7 +1599,7 @@ vec4 fog_process(vec3 vertex) {
 	fog_amount = 1.0 - exp(min(0.0, -vertex_distance * scene_data.fog_density));
 #endif // USE_DEPTH_FOG
 
-	if (abs(scene_data.fog_height_density) >= 0.0001) {
+	if (abs(scene_data.fog_height_density) >= 0.00001) {
 		vec3 world_view = scene_data.inv_view_matrix * view;
 		float y = (scene_data.inv_view_matrix * vec4(vertex, 1.0)).y;
 		// float cameraY = (scene_data.inv_view_matrix * vec4(0.0, 0.0, 0.0, 1.0)).y;

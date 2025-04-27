@@ -93,6 +93,11 @@ layout(set = 0, binding = 2, std140) uniform SkySceneData {
 	uint directional_light_count; // 4 - 56
 	float fog_height_density; // 4 - 60
 	float fog_height; // 4 - 64
+
+	float fog_height_falloff; // 4 - 68
+	float pad1; // 4 - 72
+	float pad2; // 4 - 76
+	float pad3; // 4 - 80
 }
 sky_scene_data;
 
@@ -174,16 +179,15 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 vec4 fog_process(vec3 view, vec3 sky_color) {
 	float fog_amount = 1.0;
 
-	const float height_falloff = 0.02; // TODO register this as a parameter?
 	// float y_mul = height_falloff;
 	// float FH = scene_data_block.data.fog_height;
 	// float WVy = world_view_y;
 	// float FH_density = scene_data_block.data.fog_height_density;
 	// float FH_density = 0.1;
 
-	// TODO: fog_amount should be 1 if there is normal fog as well
+	// If there is normal fog, no need for height fog calculations. Sky is covered.
+	if (abs(sky_scene_data.fog_height_density) >= 0.00001 && abs(sky_scene_data.fog_density) < 0.00001) {
 
-	if (abs(sky_scene_data.fog_height_density) >= 0.0001) {
 		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
 		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
 		// [definite]    -exp((FH-cameraY-inf*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
@@ -196,6 +200,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		//      WVy>0 -> lim t->inf exp((FH-cameraY-t)*y_mul) = lim t->inf exp(-t) = 0
 		//      WVy<0 -> lim t->inf exp((FH-cameraY+t)*y_mul) = lim t->inf exp(t) => inf (technically not valid, but works...)
 
+		const float height_falloff = sky_scene_data.fog_height_falloff;
 		float y_diff = params.position.y-sky_scene_data.fog_height;
 		if (view.y > 0.0) {
 			float density_integral = exp(-y_diff*height_falloff) / (view.y*height_falloff);

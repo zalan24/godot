@@ -108,6 +108,9 @@
 		<member name="fog_height_density" type="float" setter="set_fog_height_density" getter="get_fog_height_density" default="0.0">
 			The density used to increase fog as height decreases. To make fog increase as height increases, use a negative value.
 		</member>
+		<member name="fog_height_falloff" type="float" setter="set_fog_height_falloff" getter="get_fog_height_falloff" default="0.02">
+			TODO -- edit other height fog related descriptions too.
+		</member>
 		<member name="fog_light_color" type="Color" setter="set_fog_light_color" getter="get_fog_light_color" default="Color(0.518, 0.553, 0.608, 1)">
 			The fog's color.
 		</member>

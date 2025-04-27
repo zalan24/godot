@@ -204,6 +204,7 @@ void RenderSceneDataRD::update_ubo(RID p_uniform_buffer, RS::ViewportDebugDraw p
 		ubo.fog_density = render_scene_render->environment_get_fog_density(p_env);
 		ubo.fog_height = render_scene_render->environment_get_fog_height(p_env);
 		ubo.fog_height_density = render_scene_render->environment_get_fog_height_density(p_env);
+		ubo.fog_height_falloff = render_scene_render->environment_get_fog_height_falloff(p_env);
 		ubo.fog_aerial_perspective = render_scene_render->environment_get_fog_aerial_perspective(p_env);
 
 		ubo.fog_depth_curve = render_scene_render->environment_get_fog_depth_curve(p_env);

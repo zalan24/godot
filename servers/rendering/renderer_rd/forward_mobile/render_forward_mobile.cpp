@@ -1052,12 +1052,13 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 			base_specialization.disable_fog = true;
 			base_specialization.use_fog_aerial_perspective = false;
 			base_specialization.use_fog_sun_scatter = false;
-			base_specialization.use_fog_height_density = false;
+			base_specialization.use_fog_height_density = false; // TODO
 			base_specialization.use_depth_fog = false;
 		} else {
 			base_specialization.disable_fog = false;
 			base_specialization.use_fog_aerial_perspective = environment_get_fog_aerial_perspective(p_render_data->environment) > 0.0;
 			base_specialization.use_fog_sun_scatter = environment_get_fog_sun_scatter(p_render_data->environment) > 0.001;
+			// TODO
 			base_specialization.use_fog_height_density = abs(environment_get_fog_height_density(p_render_data->environment)) >= 0.0001;
 			base_specialization.use_depth_fog = p_render_data->environment.is_valid() && environment_get_fog_mode(p_render_data->environment) == RS::EnvironmentFogMode::ENV_FOG_MODE_DEPTH;
 		}

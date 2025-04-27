@@ -97,7 +97,7 @@ private:
 	RID uniform_buffer; // loaded into this uniform buffer (supplied externally)
 
 	// This struct is loaded into Set 1 - Binding 0, populated at start of rendering a frame, must match with shader code
-	struct UBO { //
+	struct UBO {
 		float projection_matrix[16];
 		float inv_projection_matrix[16];
 		float inv_view_matrix[16];
@@ -155,7 +155,7 @@ private:
 
 		float fog_sun_scatter;
 		float fog_aerial_perspective;
-		float time;
+		float fog_height_falloff;
 		float reflection_multiplier;
 
 		float taa_jitter[2];
@@ -166,6 +166,11 @@ private:
 		uint32_t pancake_shadows;
 		uint32_t camera_visible_layers;
 		float pass_alpha_multiplier;
+
+		float time;
+		uint32_t pad1;
+		uint32_t pad2;
+		uint32_t pad3;
 	};
 
 	struct UBODATA {

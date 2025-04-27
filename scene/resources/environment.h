@@ -183,7 +183,8 @@ private:
 	float fog_sun_scatter = 0.0;
 	float fog_density = 0.01;
 	float fog_height = 0.0;
-	float fog_height_density = 0.0; //can be negative to invert effect
+	float fog_height_density = 0.0;
+	float fog_height_falloff = 0.02; //can be negative to invert effect
 	float fog_aerial_perspective = 0.0;
 	float fog_sky_affect = 1.0;
 
@@ -389,6 +390,8 @@ public:
 	float get_fog_height() const;
 	void set_fog_height_density(float p_amount);
 	float get_fog_height_density() const;
+	void set_fog_height_falloff(float p_amount);
+	float get_fog_height_falloff() const;
 	void set_fog_aerial_perspective(float p_aerial_perspective);
 	float get_fog_aerial_perspective() const;
 	void set_fog_sky_affect(float p_sky_affect);
