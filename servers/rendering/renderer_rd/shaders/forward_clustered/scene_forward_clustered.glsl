@@ -1112,7 +1112,7 @@ vec4 fog_process(vec3 vertex) {
 		float height_falloff = scene_data_block.data.fog_height_falloff;
 		float density_integral = 0;
 		float y_diff = cameraY-scene_data_block.data.fog_height;
-		if (abs(world_view_y) > 0.0001) {
+		if (abs(world_view_y) > 0.0001 && abs(height_falloff) > 0.0001) {
 			density_integral =
 			(exp(-y_diff*height_falloff) - exp(-(y_diff+vertex_distance*world_view_y)*height_falloff)) / (world_view_y*height_falloff);
 		}
