@@ -180,6 +180,9 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 	// float WVy = world_view_y;
 	// float FH_density = scene_data_block.data.fog_height_density;
 	// float FH_density = 0.1;
+
+	// TODO: fog_amount should be 1 if there is normal fog as well
+
 	if (abs(sky_scene_data.fog_height_density) >= 0.0001) {
 		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
 		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
@@ -210,7 +213,8 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 			vec3 light_color = directional_lights.data[i].color_size.xyz * directional_lights.data[i].direction_energy.w;
 			float light_amount = pow(max(dot(view, directional_lights.data[i].direction_energy.xyz), 0.0), 8.0);
 			// Fog amount is used for the center as a simple approximation
-			fog_color += light_color * light_amount * fog_amount * sky_scene_data.fog_sun_scatter;
+			// TODO fog_amount is not necessary here??? It's already weighted by the fog_amount
+			fog_color += light_color * light_amount /* * fog_amount*/ * sky_scene_data.fog_sun_scatter;
 		}
 	}
 

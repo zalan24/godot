@@ -1051,7 +1051,7 @@ vec4 fog_process(vec3 vertex) {
 		for (uint i = 0; i < scene_data_block.data.directional_light_count; i++) {
 			vec3 light_color = directional_lights.data[i].color * directional_lights.data[i].energy;
 			float light_amount = pow(max(dot(view, directional_lights.data[i].direction), 0.0), 8.0);
-			fog_color += light_color * light_amount * scene_data_block.data.fog_sun_scatter;
+			fog_color += light_color * light_amount * scene_data_block.data.fog_sun_scatter; // TODO fog amount???
 		}
 	}
 
@@ -1065,11 +1065,9 @@ vec4 fog_process(vec3 vertex) {
 		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
 	}
 
-	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
-		// TODO
-		//  1) apply to sky
-		//  2) adjust sun scatter: the sun currently assumes full fog
+	const float height_falloff = 0.02; // TODO register this as a parameter?
 
+	if (abs(scene_data_block.data.fog_height_density) >= 0.0001) {
 		// TODO lift these out of the branch?
 		float vertex_distance = length(vertex);
 		vec3 view = vertex/vertex_distance;
@@ -1080,8 +1078,6 @@ vec4 fog_process(vec3 vertex) {
 			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])
 		);
 		float cameraY = scene_data_block.data.inv_view_matrix[3][1];
-
-		const float height_falloff = 0.02; // TODO register this as a parameter?
 
 		// float y_mul = height_falloff;
 		// float FH = scene_data_block.data.fog_height;
