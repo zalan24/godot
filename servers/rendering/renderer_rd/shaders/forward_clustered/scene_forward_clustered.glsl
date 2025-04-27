@@ -1072,6 +1072,8 @@ vec4 fog_process(vec3 vertex) {
 		vec3 view = vertex/vertex_distance;
 		// ---
 
+		// TODO there is a contour between the sky and the terrain if there is sun scattering. No contour without sun scattering
+
 		float world_view_y = dot(
 			view,
 			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])

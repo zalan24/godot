@@ -202,7 +202,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 
 		const float height_falloff = sky_scene_data.fog_height_falloff;
 		float y_diff = params.position.y-sky_scene_data.fog_height;
-		if (view.y > 0.0) {
+		if (view.y*height_falloff > 0.0) {
 			float density_integral = exp(-y_diff*height_falloff) / (view.y*height_falloff);
 			fog_amount = 1.0 - exp(-density_integral * sky_scene_data.fog_height_density);
 		}
