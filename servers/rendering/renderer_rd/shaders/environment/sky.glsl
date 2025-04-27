@@ -177,7 +177,7 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 }
 
 vec4 fog_process(vec3 view, vec3 sky_color) {
-	float fog_amount = 1.0;
+	float fog_amount = sky_scene_data.fog_height_density >= 0.00001 ? 1.0 : 0.0;
 
 	// float y_mul = height_falloff;
 	// float FH = scene_data_block.data.fog_height;
@@ -186,7 +186,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 	// float FH_density = 0.1;
 
 	// If there is normal fog, no need for height fog calculations. Sky is covered.
-	if (abs(sky_scene_data.fog_height_density) >= 0.00001 && abs(sky_scene_data.fog_density) < 0.00001) {
+	if (sky_scene_data.fog_height_density >= 0.00001 && sky_scene_data.fog_density < 0.00001) {
 
 		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
 		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
@@ -207,7 +207,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 			fog_amount = 1.0 - exp(-density_integral * sky_scene_data.fog_height_density);
 		}
 		else
-			fog_amount = 1.0; // density_integral is infinite
+			fog_amount = 1.0; // density_integral is infinite, unless density = 0
 	}
 	vec3 fog_color = mix(sky_scene_data.fog_light_color, sky_color, fog_amount * sky_scene_data.fog_aerial_perspective);
 
@@ -304,7 +304,7 @@ void main() {
 	// Draw "fixed" fog before volumetric fog to ensure volumetric fog can appear in front of the sky.
 	if (sky_scene_data.fog_enabled) {
 		vec4 fog = fog_process(cube_normal, frag_color.rgb);
-		frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a * sky_scene_data.fog_sky_affect); //
+		frag_color.rgb = mix(frag_color.rgb, fog.rgb, fog.a * sky_scene_data.fog_sky_affect);
 	}
 
 	if (sky_scene_data.volumetric_fog_enabled) {
