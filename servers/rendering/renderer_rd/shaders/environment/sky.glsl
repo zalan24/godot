@@ -177,7 +177,7 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 }
 
 vec4 fog_process(vec3 view, vec3 sky_color) {
-	float fog_amount = sky_scene_data.fog_height_density >= 0.00001 ? 1.0 : 0.0;
+	float fog_amount = (sky_scene_data.fog_height_density >= 0.00001 || sky_scene_data.fog_density >= 0.00001) ? 1.0 : 0.0;
 
 	// float y_mul = height_falloff;
 	// float FH = scene_data_block.data.fog_height;
