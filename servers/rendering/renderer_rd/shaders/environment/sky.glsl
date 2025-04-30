@@ -179,32 +179,14 @@ vec4 volumetric_fog_process(vec2 screen_uv) {
 vec4 fog_process(vec3 view, vec3 sky_color) {
 	float fog_amount = (sky_scene_data.fog_height_density >= 0.00001 || sky_scene_data.fog_density >= 0.00001) ? 1.0 : 0.0;
 
-	// float y_mul = height_falloff;
-	// float FH = scene_data_block.data.fog_height;
-	// float WVy = world_view_y;
-	// float FH_density = scene_data_block.data.fog_height_density;
-	// float FH_density = 0.1;
-
 	// If there is normal fog, no need for height fog calculations. Sky is covered.
 	if (sky_scene_data.fog_height_density >= 0.00001 && sky_scene_data.fog_density < 0.00001) {
-
-		// I[0, inf]:  exp((FH-cameraY-t*WVy)*y_mul)  dt =
-		// [indefinite]  -exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) + c0
-		// [definite]    -exp((FH-cameraY-inf*WVy)*y_mul)/(WVy*y_mul) + exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul)
-		// [definite]    exp((FH-cameraY-0*WVy)*y_mul)/(WVy*y_mul) - lim t->inf: exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul)
-
-		// lim t->inf: exp((FH-cameraY-t*WVy)*y_mul)/(WVy*y_mul) =
-		//    1/(WVy*y_mul) * lim t->inf: exp((FH-cameraY-t*WVy)*y_mul) =
-		//    1/(WVy*y_mul) * lim t->inf: exp((FH-cameraY-t*WVy)*y_mul) =
-		//      WVy=0 -> exp((FH-cameraY-t*0)*y_mul) = exp((FH-cameraY)*y_mul)
-		//      WVy>0 -> lim t->inf exp((FH-cameraY-t)*y_mul) = lim t->inf exp(-t) = 0
-		//      WVy<0 -> lim t->inf exp((FH-cameraY+t)*y_mul) = lim t->inf exp(t) => inf (technically not valid, but works...)
-
 		const float height_falloff = sky_scene_data.fog_height_falloff;
 		float y_diff = params.position.y-sky_scene_data.fog_height;
+		float base_density = sky_scene_data.fog_height_density;
 		if (view.y*height_falloff > 0.0) {
-			float density_integral = exp(-y_diff*height_falloff) / (view.y*height_falloff);
-			fog_amount = 1.0 - exp(-density_integral * sky_scene_data.fog_height_density);
+			float density_integral = base_density * exp(-y_diff*height_falloff) / (view.y*height_falloff);
+			fog_amount = 1.0 - exp(-density_integral);
 		}
 		else
 			fog_amount = 1.0; // density_integral is infinite, unless density = 0
@@ -217,9 +199,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		for (uint i = 0; i < sky_scene_data.directional_light_count; i++) {
 			vec3 light_color = directional_lights.data[i].color_size.xyz * directional_lights.data[i].direction_energy.w;
 			float light_amount = pow(max(dot(view, directional_lights.data[i].direction_energy.xyz), 0.0), 8.0);
-			// Fog amount is used for the center as a simple approximation
-			// TODO fog_amount is not necessary here??? It's already weighted by the fog_amount
-			fog_color += light_color * light_amount /* * fog_amount*/ * sky_scene_data.fog_sun_scatter;
+			fog_color += light_color * light_amount * sky_scene_data.fog_sun_scatter;
 		}
 	}
 
