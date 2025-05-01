@@ -112,6 +112,9 @@ uniform bool fog_enabled;
 uniform float fog_density;
 uniform float fog_sky_affect;
 uniform uint directional_light_count;
+uniform float fog_height_density;
+uniform float fog_height;
+uniform float fog_height_falloff;
 
 #ifdef USE_MULTIVIEW
 layout(std140) uniform MultiviewData { // ubo:11
@@ -135,7 +138,20 @@ vec3 interleaved_gradient_noise(vec2 pos) {
 
 #if !defined(DISABLE_FOG)
 vec4 fog_process(vec3 view, vec3 sky_color) {
-	vec3 fog_color = mix(fog_light_color.rgb, sky_color, fog_aerial_perspective);
+	float fog_amount = (fog_height_density >= 0.00001 || fog_density >= 0.00001) ? 1.0 : 0.0;
+
+	// If there is normal fog, no need for height fog calculations. Sky is covered.
+	if (fog_height_density >= 0.00001 && fog_density < 0.00001) {
+		float y_diff = position.y-fog_height;
+		float base_density = fog_height_density;
+		if (view.y*fog_height_falloff > 0.0) {
+			float density_integral = base_density * exp(-y_diff*fog_height_falloff) / (view.y*fog_height_falloff);
+			fog_amount = 1.0 - exp(-density_integral);
+		}
+		else
+			fog_amount = 1.0; // density_integral is infinite, unless density = 0
+	}
+	vec3 fog_color = mix(fog_light_color.rgb, sky_color, fog_amount * fog_aerial_perspective);
 
 	if (fog_sun_scatter > 0.001) {
 		vec4 sun_scatter = vec4(0.0);
@@ -147,7 +163,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		}
 	}
 
-	return vec4(fog_color, 1.0);
+	return vec4(fog_color, fog_amount);
 }
 #endif // !DISABLE_FOG
 
@@ -223,7 +239,7 @@ void main() {
 	// Draw "fixed" fog before volumetric fog to ensure volumetric fog can appear in front of the sky.
 	if (fog_enabled) {
 		vec4 fog = fog_process(cube_normal, color.rgb);
-		color.rgb = mix(color.rgb, fog.rgb, fog.a * fog_sky_affect); //
+		color.rgb = mix(color.rgb, fog.rgb, fog.a * fog_sky_affect);
 	}
 
 	if (custom_fog.a > 0.0) {

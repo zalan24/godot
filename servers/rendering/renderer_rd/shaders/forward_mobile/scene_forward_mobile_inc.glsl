@@ -128,11 +128,6 @@ bool sc_use_fog_height_density() {
 	return ((sc_packed_0() >> 9) & 1U) != 0;
 }
 
-// TODO??
-// bool sc_use_fog_height_falloff() {
-// 	return ((sc_packed_0() >> 9) & 1U) != 0;
-// }
-
 bool sc_use_lightmap_bicubic_filter() {
 	return ((sc_packed_0() >> 10) & 1U) != 0;
 }

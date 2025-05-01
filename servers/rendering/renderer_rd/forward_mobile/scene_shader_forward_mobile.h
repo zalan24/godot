@@ -70,7 +70,7 @@ public:
 				uint32_t use_depth_fog : 1;
 				uint32_t use_fog_aerial_perspective : 1;
 				uint32_t use_fog_sun_scatter : 1;
-				uint32_t use_fog_height_density : 1; // TODO fog_height_falloff
+				uint32_t use_fog_height_density : 1;
 				uint32_t use_lightmap_bicubic_filter : 1;
 				uint32_t multimesh : 1;
 				uint32_t multimesh_format_2d : 1;

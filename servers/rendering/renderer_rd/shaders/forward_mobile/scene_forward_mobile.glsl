@@ -794,10 +794,12 @@ vec4 fog_process(vec3 vertex) {
 		fog_color = mix(fog_color, sky_fog_color, scene_data_block.data.fog_aerial_perspective);
 	}
 
+	float vertex_distance = length(vertex);
+	vec3 view = vertex/vertex_distance;
+
 	if (sc_use_fog_sun_scatter()) {
 		vec4 sun_scatter = vec4(0.0);
 		float sun_total = 0.0;
-		vec3 view = normalize(vertex);
 
 		for (uint i = 0; i < sc_directional_lights(); i++) {
 			vec3 light_color = directional_lights.data[i].color * directional_lights.data[i].energy;
@@ -809,19 +811,33 @@ vec4 fog_process(vec3 vertex) {
 	float fog_amount = 0.0;
 
 	if (sc_use_depth_fog()) {
-		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, length(vertex));
+		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, vertex_distance);
 		float fog_quad_amount = pow(fog_z, scene_data_block.data.fog_depth_curve) * scene_data_block.data.fog_density;
 		fog_amount = fog_quad_amount;
 	} else {
-		fog_amount = 1 - exp(min(0.0, -length(vertex) * scene_data_block.data.fog_density));
+		fog_amount = 1 - exp(min(0.0, -vertex_distance * scene_data_block.data.fog_density));
 	}
 
-	if (sc_use_fog_height_density()) { // TODO
-		float y = (scene_data_block.data.inv_view_matrix * vec4(vertex, 1.0)).y;
+	if (sc_use_fog_height_density()) {
+		float world_view_y = dot(
+			view,
+			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])
+		);
+		float cameraY = scene_data_block.data.inv_view_matrix[3][1];
 
-		float y_dist = y - scene_data_block.data.fog_height;
-
-		float vfog_amount = 1.0 - exp(min(0.0, y_dist * scene_data_block.data.fog_height_density));
+		float height_falloff = scene_data_block.data.fog_height_falloff;
+		float base_density = scene_data_block.data.fog_height_density;
+		float density_integral = 0;
+		float y_diff = cameraY-scene_data_block.data.fog_height;
+		if (abs(height_falloff*world_view_y) > 0.000001) {
+			density_integral =
+				base_density * (exp(-y_diff*height_falloff) - exp(-(y_diff+vertex_distance*world_view_y)*height_falloff)) / (world_view_y*height_falloff);
+		}
+		else {
+			float fog_density = base_density * exp(-y_diff*height_falloff);
+			density_integral = vertex_distance * fog_density;
+		}
+		float vfog_amount = 1.0 - exp(-density_integral);
 
 		fog_amount = max(vfog_amount, fog_amount);
 	}

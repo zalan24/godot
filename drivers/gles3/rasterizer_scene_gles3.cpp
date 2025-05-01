@@ -856,6 +856,9 @@ void RasterizerSceneGLES3::_draw_sky(RID p_env, const Projection &p_projection, 
 	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::FOG_DENSITY, environment_get_fog_density(p_env), shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
 	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::FOG_SKY_AFFECT, environment_get_fog_sky_affect(p_env), shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
 	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::DIRECTIONAL_LIGHT_COUNT, sky_globals.directional_light_count, shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
+	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::FOG_HEIGHT_DENSITY, environment_get_fog_height_density(p_env), shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
+	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::FOG_HEIGHT, environment_get_fog_height(p_env), shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
+	material_storage->shaders.sky_shader.version_set_uniform(SkyShaderGLES3::FOG_HEIGHT_FALLOFF, environment_get_fog_height_falloff(p_env), shader_data->version, SkyShaderGLES3::MODE_BACKGROUND, spec_constants);
 
 	if (p_use_multiview) {
 		glBindBufferBase(GL_UNIFORM_BUFFER, SKY_MULTIVIEW_UNIFORM_LOCATION, scene_state.multiview_buffer);

@@ -1059,17 +1059,15 @@ vec4 fog_process(vec3 vertex) {
 
 	float fog_amount = 0.0;
 
-	if (sc_use_depth_fog()) { // TODO make this exclusive with exp height fog?
+	if (sc_use_depth_fog()) {
 		float fog_z = smoothstep(scene_data_block.data.fog_depth_begin, scene_data_block.data.fog_depth_end, vertex_distance);
 		float fog_quad_amount = pow(fog_z, scene_data_block.data.fog_depth_curve) * scene_data_block.data.fog_density;
 		fog_amount = fog_quad_amount;
 	} else {
-		fog_amount = 1 - exp(min(0.0, vertex_distance * scene_data_block.data.fog_density));
+		fog_amount = 1 - exp(min(0.0, -vertex_distance * scene_data_block.data.fog_density));
 	}
 
 	if (abs(scene_data_block.data.fog_height_density) >= 0.00001) {
-		// TODO there is a contour between the sky and the terrain if there is sun scattering. No contour without sun scattering
-
 		float world_view_y = dot(
 			view,
 			vec3(scene_data_block.data.inv_view_matrix[0][1], scene_data_block.data.inv_view_matrix[1][1], scene_data_block.data.inv_view_matrix[2][1])
