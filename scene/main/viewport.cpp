@@ -44,6 +44,7 @@
 #include "scene/main/canvas_layer.h"
 #include "scene/main/window.h"
 #include "scene/resources/mesh.h"
+#include "scene/resources/svg_texture.h"
 #include "scene/resources/text_line.h"
 #include "scene/resources/world_2d.h"
 #include "servers/audio_server.h"
@@ -1085,6 +1086,9 @@ bool Viewport::_set_size(const Size2i &p_size, const Size2 &p_size_2d_override, 
 	if (new_font_oversampling != font_oversampling) {
 		TS->reference_oversampling_level(new_font_oversampling);
 		TS->unreference_oversampling_level(font_oversampling);
+
+		SVGTexture::reference_scaling_level(new_font_oversampling);
+		SVGTexture::unreference_scaling_level(font_oversampling);
 	}
 
 	size = new_size;
@@ -1657,7 +1661,7 @@ void Viewport::_gui_show_tooltip_at(const Point2i &p_pos) {
 	}
 	Size2 scale = get_popup_base_transform().get_scale();
 	real_t popup_scale = MIN(scale.x, scale.y);
-	Point2 tooltip_offset = GLOBAL_GET("display/mouse_cursor/tooltip_position_offset");
+	Point2 tooltip_offset = GLOBAL_GET_CACHED(Point2, "display/mouse_cursor/tooltip_position_offset");
 	tooltip_offset *= popup_scale;
 	Rect2 r(gui.tooltip_pos + tooltip_offset, gui.tooltip_popup->get_contents_minimum_size());
 	Rect2i vr;
@@ -1929,7 +1933,7 @@ void Viewport::_gui_input_event(Ref<InputEvent> p_event) {
 				while (ci) {
 					Control *control = Object::cast_to<Control>(ci);
 					if (control) {
-						if (control->get_focus_mode_with_override() != Control::FOCUS_NONE) {
+						if (control->_is_focusable()) {
 							// Grabbing unhovered focus can cause issues when mouse is dragged
 							// with another button held down.
 							if (control != gui.key_focus && gui.mouse_over_hierarchy.has(control)) {
